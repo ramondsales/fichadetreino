@@ -281,8 +281,27 @@
 </div>
 
 <script>
-(function(){
-  "use strict";
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyCDqGIFdBsZE2kSlOZLgn9b1Hsum9qO4aY",
+  authDomain: "ficha-de-treino-ca9e1.firebaseapp.com",
+  projectId: "ficha-de-treino-ca9e1",
+  storageBucket: "ficha-de-treino-ca9e1.firebasestorage.app",
+  messagingSenderId: "329031905407",
+  appId: "1:329031905407:web:4de8933145d8bbd7920f4a",
+  measurementId: "G-ML1QCQCGNH"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 
   // ---------------- DATA ----------------
   const SERIES = {

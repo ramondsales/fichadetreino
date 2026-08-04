@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ficha de Treino — Ramon Sales</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#121214;
+    --bg-elevated:#1b1b1f;
+    --bg-card:#202024;
+    --steel:#2c2c31;
+    --steel-line:#38383e;
+    --gold:#d4a017;
+    --gold-dim:#8a6b1e;
+    --off-white:#f2f0eb;
+    --muted:#9a9a9f;
+    --green:#3fa34d;
+    --red:#b23a3a;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1200px 600px at 10% -10%, rgba(212,160,23,0.08), transparent 60%),
+      var(--bg);
+    color:var(--off-white);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--gold);color:#14140f;}
+
+  /* ---------- Header ---------- */
+  header{
+    padding:22px 20px 16px;
+    border-bottom:1px solid var(--steel-line);
+    position:sticky;top:0;z-index:20;
+    background:rgba(18,18,20,0.92);
+    backdrop-filter:blur(8px);
+  }
+  .header-inner{max-width:820px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  .brand{display:flex;align-items:center;gap:12px;}
+  .brand-mark{
+    width:38px;height:38px;border:2px solid var(--gold);
+    clip-path:polygon(50% 0%, 100% 100%, 0% 100%);
+    display:flex;align-items:flex-end;justify-content:center;
+    background:linear-gradient(180deg, transparent 55%, rgba(212,160,23,0.35) 100%);
+  }
+  .brand-text .eyebrow{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;color:var(--gold);text-transform:uppercase;}
+  .brand-text h1{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:0.03em;margin:0;line-height:1;}
+  .brand-text .sub{font-size:12px;color:var(--muted);margin-top:2px;}
+
+  .nav-tabs{display:flex;gap:6px;background:var(--bg-elevated);padding:4px;border-radius:999px;border:1px solid var(--steel-line);}
+  .nav-tab{
+    font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.04em;
+    padding:8px 14px;border-radius:999px;border:none;background:transparent;color:var(--muted);
+    cursor:pointer;transition:all .15s ease;
+  }
+  .nav-tab.active{background:var(--gold);color:#14140f;font-weight:700;}
+  .nav-tab:disabled{opacity:0.35;cursor:not-allowed;}
+
+  /* ---------- Layout ---------- */
+  main{max-width:820px;margin:0 auto;padding:20px 16px 80px;}
+
+  /* Series selector */
+  .series-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:22px;}
+  @media(max-width:640px){.series-grid{grid-template-columns:repeat(3,1fr);}}
+  .series-btn{
+    background:var(--bg-card);border:1px solid var(--steel-line);border-radius:var(--radius);
+    padding:14px 8px;text-align:center;cursor:pointer;color:var(--off-white);
+    transition:border-color .15s ease, transform .1s ease;
+  }
+  .series-btn:hover{border-color:var(--gold-dim);}
+  .series-btn.selected{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset;}
+  .series-btn:disabled{opacity:0.3;cursor:not-allowed;}
+  .series-btn .letter{font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--gold);line-height:1;}
+  .series-btn .label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em;margin-top:4px;line-height:1.3;}
+
+  /* Session panel */
+  .session-card{
+    background:var(--bg-card);border:1px solid var(--steel-line);border-radius:var(--radius);
+    padding:18px;margin-bottom:20px;
+  }
+  .session-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;}
+  .session-title{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:0.02em;color:var(--off-white);}
+  .session-title span{color:var(--gold);}
+  .session-meta{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-top:4px;}
+
+  .timer{
+    font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums;
+    font-size:34px;font-weight:700;color:var(--gold);letter-spacing:0.02em;
+  }
+  .timer.idle{color:var(--muted);}
+
+  .progress-wrap{margin-top:14px;}
+  .progress-bar{height:6px;border-radius:999px;background:var(--steel);overflow:hidden;}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--gold-dim),var(--gold));transition:width .25s ease;}
+  .progress-label{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-top:6px;}
+
+  .session-actions{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;}
+  button.primary, button.finish, button.secondary{
+    font-family:'Inter',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.02em;
+    padding:11px 18px;border-radius:8px;border:none;cursor:pointer;transition:transform .1s ease, opacity .15s ease;
+  }
+  button.primary{background:var(--gold);color:#14140f;}
+  button.primary:hover{opacity:0.9;}
+  button.finish{background:var(--green);color:#0e1f11;}
+  button.finish:disabled{background:var(--steel);color:var(--muted);cursor:not-allowed;}
+  button.secondary{background:transparent;border:1px solid var(--steel-line);color:var(--muted);}
+  button.secondary:hover{border-color:var(--gold-dim);color:var(--off-white);}
+  button:active{transform:scale(0.98);}
+
+  .lock-note{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--red);margin-top:10px;display:none;}
+  .lock-note.show{display:block;}
+
+  /* Exercise list */
+  .ex-list{display:flex;flex-direction:column;gap:8px;}
+  .ex-row{
+    background:var(--bg-card);border:1px solid var(--steel-line);border-radius:var(--radius);
+    padding:12px 14px;display:flex;align-items:center;gap:12px;transition:border-color .15s ease, background .15s ease;
+  }
+  .ex-row.done{border-color:var(--green);background:rgba(63,163,77,0.07);}
+  .ex-checkbox{
+    width:24px;height:24px;flex:none;border-radius:6px;border:2px solid var(--steel-line);
+    display:flex;align-items:center;justify-content:center;cursor:pointer;background:var(--bg-elevated);
+    transition:all .15s ease;
+  }
+  .ex-checkbox.checked{background:var(--green);border-color:var(--green);}
+  .ex-checkbox svg{width:14px;height:14px;opacity:0;transition:opacity .1s ease;}
+  .ex-checkbox.checked svg{opacity:1;}
+  .ex-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold-dim);width:18px;flex:none;}
+  .ex-info{flex:1;min-width:0;}
+  .ex-name{font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:0.01em;}
+  .ex-row.done .ex-name{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--green);}
+  .ex-detail{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-top:3px;display:flex;gap:10px;flex-wrap:wrap;}
+  .ex-detail b{color:var(--off-white);font-weight:500;}
+  .video-btn{
+    flex:none;width:34px;height:34px;border-radius:8px;border:1px solid var(--steel-line);
+    display:flex;align-items:center;justify-content:center;color:var(--gold);background:transparent;
+    cursor:pointer;transition:border-color .15s ease, background .15s ease;
+  }
+  .video-btn:hover{border-color:var(--gold);background:rgba(212,160,23,0.08);}
+
+  .load-field{flex:none;display:flex;flex-direction:column;align-items:center;gap:2px;}
+  .load-field label{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em;}
+  .load-input{
+    width:58px;background:var(--bg-elevated);border:1px solid var(--steel-line);border-radius:6px;
+    color:var(--off-white);font-family:'JetBrains Mono',monospace;font-size:13px;text-align:center;
+    padding:6px 2px;transition:border-color .15s ease;
+  }
+  .load-input:focus{outline:none;border-color:var(--gold);}
+  .load-input::-webkit-outer-spin-button,.load-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+  .load-input[type=number]{-moz-appearance:textfield;}
+
+  /* video modal */
+  .video-modal-backdrop{position:fixed;inset:0;background:rgba(10,10,11,0.85);display:none;align-items:center;justify-content:center;z-index:60;padding:16px;}
+  .video-modal-backdrop.show{display:flex;}
+  .video-modal{background:var(--bg-elevated);border:1px solid var(--steel-line);border-radius:var(--radius);width:100%;max-width:640px;overflow:hidden;}
+  .video-modal-head{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--steel-line);}
+  .video-modal-head span{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:0.02em;}
+  .video-modal-close{background:transparent;border:1px solid var(--steel-line);color:var(--muted);width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:16px;line-height:1;}
+  .video-modal-close:hover{color:var(--off-white);border-color:var(--gold-dim);}
+  .video-modal-body{position:relative;width:100%;padding-top:56.25%;background:#000;}
+  .video-modal-body iframe{position:absolute;inset:0;width:100%;height:100%;border:none;}
+
+  /* History */
+  .history-list{display:flex;flex-direction:column;gap:8px;}
+  .history-empty{color:var(--muted);font-size:13px;padding:30px 0;text-align:center;font-family:'JetBrains Mono',monospace;}
+  .hist-row{
+    background:var(--bg-card);border:1px solid var(--steel-line);border-radius:var(--radius);
+    padding:13px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .hist-left .hist-series{font-family:'Bebas Neue',sans-serif;font-size:19px;color:var(--gold);}
+  .hist-left .hist-date{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-top:2px;}
+  .hist-left .hist-loads{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--gold-dim);margin-top:6px;max-width:480px;line-height:1.5;}
+  .hist-left .hist-loads b{color:var(--gold);font-weight:600;}
+  .hist-right{text-align:right;}
+  .hist-right .hist-time{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:var(--off-white);}
+  .hist-right .hist-count{font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+
+  .section-heading{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:0.02em;margin:0 0 12px;color:var(--off-white);}
+  .section-heading .accent{color:var(--gold);}
+
+  .clear-hist{margin-top:16px;}
+
+  footer{max-width:820px;margin:0 auto;padding:0 16px 40px;color:var(--muted);font-size:11px;font-family:'JetBrains Mono',monospace;text-align:center;}
+
+  /* modal */
+  .modal-backdrop{position:fixed;inset:0;background:rgba(10,10,11,0.72);display:none;align-items:center;justify-content:center;z-index:50;padding:20px;}
+  .modal-backdrop.show{display:flex;}
+  .modal{background:var(--bg-elevated);border:1px solid var(--gold-dim);border-radius:var(--radius);padding:26px;max-width:360px;width:100%;text-align:center;}
+  .modal .big{font-family:'Bebas Neue',sans-serif;font-size:40px;color:var(--gold);}
+  .modal p{color:var(--muted);font-size:13px;margin:8px 0 20px;}
+  .modal button{width:100%;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <div class="brand-text">
+        <div class="eyebrow">VL Treinos · Hipertrofia</div>
+        <h1>Ramon Sales</h1>
+        <div class="sub">Início 03/08/2026 · Término 17/09/2026 (45 dias)</div>
+      </div>
+    </div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" data-view="treino" id="tabTreino">TREINO</button>
+      <button class="nav-tab" data-view="historico" id="tabHistorico">HISTÓRICO</button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ===== TREINO VIEW ===== -->
+  <div id="viewTreino">
+    <div class="series-grid" id="seriesGrid"></div>
+
+    <div class="session-card">
+      <div class="session-top">
+        <div>
+          <div class="session-title">Série <span id="curSeriesLetter">A</span> — <span id="curSeriesName"></span></div>
+          <div class="session-meta" id="sessionMeta">Nenhum treino em andamento</div>
+        </div>
+        <div class="timer idle" id="timerDisplay">00:00:00</div>
+      </div>
+
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+        <div class="progress-label" id="progressLabel">0 de 0 exercícios marcados</div>
+      </div>
+
+      <div class="session-actions">
+        <button class="primary" id="startBtn">▶ Iniciar treino</button>
+        <button class="finish" id="finishBtn" disabled>✓ Finalizar treino</button>
+        <button class="secondary" id="resetBtn" style="display:none;">Desmarcar tudo</button>
+      </div>
+      <div class="lock-note" id="lockNote">Treino em andamento — finalize para trocar de série ou fechar a aba.</div>
+    </div>
+
+    <div class="ex-list" id="exList"></div>
+  </div>
+
+  <!-- ===== HISTORICO VIEW ===== -->
+  <div id="viewHistorico" style="display:none;">
+    <h2 class="section-heading">Histórico <span class="accent">de treinos</span></h2>
+    <div class="history-list" id="historyList"></div>
+    <button class="secondary clear-hist" id="clearHistBtn">Limpar histórico</button>
+  </div>
+
+</main>
+
+<footer>Ficha de Treino — dados salvos neste navegador · toque no ícone ▶ para ver o vídeo de execução</footer>
+
+<div class="modal-backdrop" id="doneModal">
+  <div class="modal">
+    <div class="big">Treino concluído 💪</div>
+    <p id="doneModalText">Tempo registrado no histórico.</p>
+    <button class="primary" id="doneModalOk">Fechar</button>
+  </div>
+</div>
+
+<div class="video-modal-backdrop" id="videoModal">
+  <div class="video-modal">
+    <div class="video-modal-head">
+      <span id="videoModalTitle">Vídeo</span>
+      <button class="video-modal-close" id="videoModalClose">✕</button>
+    </div>
+    <div class="video-modal-body">
+      <iframe id="videoModalFrame" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------------- DATA ----------------
+  const SERIES = {
+    A:{ name:"Peito / Costas / Cardio", exercises:[
+      {n:"Supino Inclinado Halter", s:"4", r:"12", d:"30s"},
+      {n:"Supino Reto Barra", s:"4", r:"8", d:"60s"},
+      {n:"Crucifixo Cross", s:"4", r:"10", d:"60s"},
+      {n:"Voador", s:"4", r:"10/10 drop", d:"60s"},
+      {n:"Remada Curvada Barra", s:"3", r:"12", d:"60s"},
+      {n:"Remada Sentada Pronada", s:"4", r:"10", d:"60s"},
+      {n:"Pulley Frente Triângulo", s:"4", r:"8/8 drop", d:"60s"},
+      {n:"Pull Down c/ Barra", s:"4", r:"10", d:"60s"},
+      {n:"Voador Invertido", s:"4", r:"12", d:"60s"},
+      {n:"Esteira", s:"1", r:"15 a 30 min", d:"60s"},
+    ]},
+    B:{ name:"Quadríceps / Abdômen", exercises:[
+      {n:"Cadeira Adutora", s:"3", r:"15", d:"30s"},
+      {n:"Leg Press 45°", s:"4", r:"12", d:"60s"},
+      {n:"Agachamento no Smith", s:"4", r:"10/10 drop", d:"60s"},
+      {n:"Hack", s:"3", r:"10", d:"60s"},
+      {n:"Extensora", s:"4", r:"6/12 drop", d:"60s"},
+      {n:"Afundo", s:"4", r:"12 cada lado", d:"60s"},
+      {n:"Prancha Frontal", s:"3", r:"30s", d:"60s"},
+      {n:"Supermen", s:"3", r:"15", d:"30s"},
+    ]},
+    C:{ name:"Ombro / Panturrilha / Cardio", exercises:[
+      {n:"Elevação Unilateral Cross", s:"3", r:"10", d:"30s"},
+      {n:"Elevação Lateral Halter", s:"3", r:"6/12 drop", d:"60s"},
+      {n:"Desenvolvimento Halter", s:"3", r:"8", d:"60s"},
+      {n:"Elevação Frontal Cross", s:"3", r:"6/6 drop", d:"60s"},
+      {n:"Crucifixo Inverso Cross", s:"3", r:"12", d:"60s"},
+      {n:"Remada Alta Cross Corda", s:"3", r:"10", d:"60s"},
+      {n:"Encolhimento Ombro Halter", s:"3", r:"15", d:"60s"},
+      {n:"Panturrilha c/ Peso", s:"4", r:"12", d:"60s"},
+      {n:"Esteira", s:"1", r:"15 a 30 min", d:"30s"},
+    ]},
+    D:{ name:"Tríceps / Bíceps / Abdômen", exercises:[
+      {n:"Tríceps Pulley Barra", s:"3", r:"15", d:"60s"},
+      {n:"Tríceps Testa Cross", s:"4", r:"8", d:"60s"},
+      {n:"Tríceps Coice Cross", s:"4", r:"12", d:"60s"},
+      {n:"Tríceps Francês Cross", s:"4", r:"10", d:"60s"},
+      {n:"Tríceps Banco", s:"4", r:"10", d:"60s"},
+      {n:"Rosca Martelo Corda", s:"4", r:"15", d:"60s"},
+      {n:"Rosca Direta Barra", s:"4", r:"8", d:"60s"},
+      {n:"Rosca Concentrada", s:"4", r:"12", d:"60s"},
+      {n:"Rosca Alternada Halter", s:"4", r:"10", d:"60s"},
+      {n:"Rosca Scott", s:"4", r:"10", d:"60s"},
+      {n:"Abdômen Curto", s:"4", r:"20", d:"30s"},
+    ]},
+    E:{ name:"Posterior / Glúteo / Panturrilha", exercises:[
+      {n:"Cadeira Flexora", s:"3", r:"10/10 drop", d:"60s"},
+      {n:"Mesa Flexora", s:"4", r:"8", d:"60s"},
+      {n:"Stiff", s:"3", r:"10", d:"60s"},
+      {n:"Posterior na Bola", s:"3", r:"15", d:"60s"},
+      {n:"Sumô c/ Halter", s:"4", r:"12", d:"60s"},
+      {n:"Cadeira Abdutora", s:"4", r:"12/12 drop", d:"60s"},
+      {n:"Elevação Pélvica", s:"4", r:"12", d:"60s"},
+      {n:"Panturrilha c/ Peso", s:"4", r:"12", d:"30s"},
+    ]},
+  };
+
+  function videoEmbedUrl(name){
+    const q = encodeURIComponent(name + " execução técnica correta musculação");
+    // youtube supports embedding a live search results list via listType=search
+    return "https://www.youtube.com/embed?listType=search&list=" + q;
+  }
+
+  // ---------------- STATE ----------------
+  let currentSeries = "A";
+  let checked = new Set();       // indices checked in current session
+  let loads = {};                // idx -> carga (kg) digitada na sessão atual
+  let lastLoads = {};            // cache "A:0" -> último valor salvo, pra pré-preencher
+  let workoutActive = false;
+  let startTime = null;
+  let timerInterval = null;
+
+  const els = {
+    seriesGrid: document.getElementById('seriesGrid'),
+    exList: document.getElementById('exList'),
+    curSeriesLetter: document.getElementById('curSeriesLetter'),
+    curSeriesName: document.getElementById('curSeriesName'),
+    sessionMeta: document.getElementById('sessionMeta'),
+    timerDisplay: document.getElementById('timerDisplay'),
+    progressFill: document.getElementById('progressFill'),
+    progressLabel: document.getElementById('progressLabel'),
+    startBtn: document.getElementById('startBtn'),
+    finishBtn: document.getElementById('finishBtn'),
+    resetBtn: document.getElementById('resetBtn'),
+    lockNote: document.getElementById('lockNote'),
+    tabTreino: document.getElementById('tabTreino'),
+    tabHistorico: document.getElementById('tabHistorico'),
+    viewTreino: document.getElementById('viewTreino'),
+    viewHistorico: document.getElementById('viewHistorico'),
+    historyList: document.getElementById('historyList'),
+    clearHistBtn: document.getElementById('clearHistBtn'),
+    doneModal: document.getElementById('doneModal'),
+    doneModalText: document.getElementById('doneModalText'),
+    doneModalOk: document.getElementById('doneModalOk'),
+    videoModal: document.getElementById('videoModal'),
+    videoModalFrame: document.getElementById('videoModalFrame'),
+    videoModalTitle: document.getElementById('videoModalTitle'),
+    videoModalClose: document.getElementById('videoModalClose'),
+  };
+
+  function openVideoModal(name){
+    els.videoModalTitle.textContent = name;
+    els.videoModalFrame.src = videoEmbedUrl(name);
+    els.videoModal.classList.add('show');
+  }
+  function closeVideoModal(){
+    els.videoModal.classList.remove('show');
+    els.videoModalFrame.src = ''; // stop playback
+  }
+
+  // ---------------- RENDER: series selector ----------------
+  function renderSeriesGrid(){
+    els.seriesGrid.innerHTML = '';
+    Object.keys(SERIES).forEach(letter=>{
+      const btn = document.createElement('button');
+      btn.className = 'series-btn' + (letter===currentSeries ? ' selected':'');
+      btn.disabled = workoutActive && letter!==currentSeries;
+      btn.innerHTML = `<div class="letter">${letter}</div><div class="label">${SERIES[letter].name}</div>`;
+      btn.addEventListener('click', ()=>{
+        if(workoutActive) return;
+        currentSeries = letter;
+        checked = new Set();
+        loads = {};
+        renderAll();
+      });
+      els.seriesGrid.appendChild(btn);
+    });
+  }
+
+  // ---------------- RENDER: exercise list ----------------
+  function renderExercises(){
+    const data = SERIES[currentSeries];
+    els.curSeriesLetter.textContent = currentSeries;
+    els.curSeriesName.textContent = data.name;
+    els.exList.innerHTML = '';
+    data.exercises.forEach((ex, i)=>{
+      const key = currentSeries + ':' + i;
+      const prefill = (loads[i] !== undefined) ? loads[i] : (lastLoads[key] !== undefined ? lastLoads[key] : '');
+      const row = document.createElement('div');
+      row.className = 'ex-row' + (checked.has(i) ? ' done':'');
+      row.innerHTML = `
+        <div class="ex-checkbox ${checked.has(i)?'checked':''}" data-idx="${i}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#0e1f11" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+        <div class="ex-num">${String(i+1).padStart(2,'0')}</div>
+        <div class="ex-info">
+          <div class="ex-name">${ex.n}</div>
+          <div class="ex-detail"><span><b>${ex.s}</b> séries</span><span><b>${ex.r}</b> reps</span><span>desc. <b>${ex.d}</b></span></div>
+        </div>
+        <div class="load-field">
+          <label for="load-${i}">Carga</label>
+          <input class="load-input" id="load-${i}" data-idx="${i}" type="number" min="0" step="0.5" placeholder="kg" value="${prefill}">
+        </div>
+        <button type="button" class="video-btn" data-name="${ex.n.replace(/"/g,'&quot;')}" title="Ver vídeo de execução">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+      `;
+      row.querySelector('.ex-checkbox').addEventListener('click', ()=>{
+        if(!workoutActive){ flashStartHint(); return; }
+        if(checked.has(i)) checked.delete(i); else checked.add(i);
+        renderExercises();
+        updateProgress();
+      });
+      row.querySelector('.load-input').addEventListener('change', (e)=>{
+        const v = e.target.value;
+        loads[i] = v;
+        const k = currentSeries + ':' + i;
+        lastLoads[k] = v;
+        saveLastLoads();
+      });
+      row.querySelector('.load-input').addEventListener('click', (e)=> e.stopPropagation());
+      row.querySelector('.video-btn').addEventListener('click', ()=> openVideoModal(ex.n));
+      els.exList.appendChild(row);
+    });
+  }
+
+  function flashStartHint(){
+    els.lockNote.textContent = "Inicie o treino para marcar os exercícios.";
+    els.lockNote.classList.add('show');
+    setTimeout(()=>{ if(!workoutActive) els.lockNote.classList.remove('show'); }, 2200);
+  }
+
+  // ---------------- PROGRESS ----------------
+  function updateProgress(){
+    const total = SERIES[currentSeries].exercises.length;
+    const done = checked.size;
+    const pct = total? Math.round((done/total)*100):0;
+    els.progressFill.style.width = pct + '%';
+    els.progressLabel.textContent = `${done} de ${total} exercícios marcados`;
+    els.finishBtn.disabled = !workoutActive; // pode finalizar mesmo parcial, mas só com treino ativo
+  }
+
+  // ---------------- TIMER ----------------
+  function fmt(ms){
+    const totalSec = Math.floor(ms/1000);
+    const h = String(Math.floor(totalSec/3600)).padStart(2,'0');
+    const m = String(Math.floor((totalSec%3600)/60)).padStart(2,'0');
+    const s = String(totalSec%60).padStart(2,'0');
+    return `${h}:${m}:${s}`;
+  }
+  function tick(){
+    const elapsed = Date.now() - startTime;
+    els.timerDisplay.textContent = fmt(elapsed);
+  }
+
+  // ---------------- ACTIONS ----------------
+  function startWorkout(){
+    workoutActive = true;
+    checked = new Set();
+    loads = {};
+    startTime = Date.now();
+    els.timerDisplay.classList.remove('idle');
+    els.startBtn.style.display = 'none';
+    els.resetBtn.style.display = 'inline-block';
+    els.lockNote.classList.add('show');
+    els.lockNote.textContent = 'Treino em andamento — finalize para trocar de série ou fechar a aba.';
+    els.sessionMeta.textContent = 'Iniciado às ' + new Date(startTime).toLocaleTimeString('pt-BR');
+    timerInterval = setInterval(tick, 1000);
+    tick();
+    renderSeriesGrid();
+    updateProgress();
+  }
+
+  async function finishWorkout(){
+    clearInterval(timerInterval);
+    const durationMs = Date.now() - startTime;
+    const total = SERIES[currentSeries].exercises.length;
+    const done = checked.size;
+    const exerciseLog = SERIES[currentSeries].exercises.map((ex,i)=>({
+      name: ex.n,
+      done: checked.has(i),
+      load: loads[i] !== undefined && loads[i] !== '' ? loads[i] : null
+    }));
+
+    const entry = {
+      id: 'w_' + Date.now(),
+      date: new Date().toISOString(),
+      series: currentSeries,
+      seriesName: SERIES[currentSeries].name,
+      durationMs,
+      done, total,
+      exercises: exerciseLog
+    };
+    await saveHistoryEntry(entry);
+
+    workoutActive = false;
+    els.timerDisplay.classList.add('idle');
+    els.startBtn.style.display = 'inline-block';
+    els.resetBtn.style.display = 'none';
+    els.lockNote.classList.remove('show');
+    els.sessionMeta.textContent = 'Nenhum treino em andamento';
+    els.timerDisplay.textContent = '00:00:00';
+    checked = new Set();
+    loads = {};
+    renderAll();
+
+    els.doneModalText.textContent = `Série ${currentSeries} concluída em ${fmt(durationMs)} · ${done}/${total} exercícios marcados.`;
+    els.doneModal.classList.add('show');
+    await loadHistory();
+  }
+
+  function resetChecks(){
+    if(!workoutActive) return;
+    checked = new Set();
+    renderExercises();
+    updateProgress();
+  }
+
+  // ---------------- STORAGE ----------------
+  async function saveHistoryEntry(entry){
+    try{
+      let list = [];
+      try{
+        const res = await window.storage.get('history', false);
+        if(res && res.value) list = JSON.parse(res.value);
+      }catch(e){ list = []; }
+      list.unshift(entry);
+      await window.storage.set('history', JSON.stringify(list), false);
+    }catch(e){
+      console.error('Erro ao salvar histórico', e);
+    }
+  }
+
+  async function saveLastLoads(){
+    try{
+      await window.storage.set('lastLoads', JSON.stringify(lastLoads), false);
+    }catch(e){ console.error('Erro ao salvar cargas', e); }
+  }
+
+  async function loadLastLoads(){
+    try{
+      const res = await window.storage.get('lastLoads', false);
+      if(res && res.value) lastLoads = JSON.parse(res.value);
+    }catch(e){ lastLoads = {}; }
+  }
+
+  async function loadHistory(){
+    els.historyList.innerHTML = '<div class="history-empty">Carregando…</div>';
+    let list = [];
+    try{
+      const res = await window.storage.get('history', false);
+      if(res && res.value) list = JSON.parse(res.value);
+    }catch(e){ list = []; }
+
+    if(!list.length){
+      els.historyList.innerHTML = '<div class="history-empty">Nenhum treino registrado ainda.</div>';
+      return;
+    }
+    els.historyList.innerHTML = '';
+    list.forEach(item=>{
+      const d = new Date(item.date);
+      const dateStr = d.toLocaleDateString('pt-BR', {weekday:'short', day:'2-digit', month:'2-digit', year:'numeric'});
+      const timeStr = d.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
+      const loadsUsed = (item.exercises||[]).filter(x=>x.load);
+      const loadsStr = loadsUsed.length
+        ? loadsUsed.map(x=> `${x.name} <b>${x.load}kg</b>`).join(' · ')
+        : '';
+
+      const row = document.createElement('div');
+      row.className = 'hist-row';
+      row.innerHTML = `
+        <div class="hist-left">
+          <div class="hist-series">Série ${item.series} <span style="font-family:'Inter',sans-serif;font-size:11px;color:var(--muted);">${item.seriesName||''}</span></div>
+          <div class="hist-date">${dateStr} · ${timeStr}</div>
+          ${loadsStr ? `<div class="hist-loads">${loadsStr}</div>` : ''}
+        </div>
+        <div class="hist-right">
+          <div class="hist-time">${fmt(item.durationMs)}</div>
+          <div class="hist-count">${item.done}/${item.total} exercícios</div>
+        </div>
+      `;
+      els.historyList.appendChild(row);
+    });
+  }
+
+  async function clearHistory(){
+    if(!confirm('Tem certeza que deseja apagar todo o histórico de treinos?')) return;
+    try{
+      await window.storage.delete('history', false);
+    }catch(e){ /* key may not exist */ }
+    await loadHistory();
+  }
+
+  // ---------------- NAV ----------------
+  function switchView(view){
+    if(view==='historico'){
+      els.viewTreino.style.display='none';
+      els.viewHistorico.style.display='block';
+      els.tabTreino.classList.remove('active');
+      els.tabHistorico.classList.add('active');
+      loadHistory();
+    } else {
+      els.viewHistorico.style.display='none';
+      els.viewTreino.style.display='block';
+      els.tabHistorico.classList.remove('active');
+      els.tabTreino.classList.add('active');
+    }
+  }
+
+  function renderAll(){
+    renderSeriesGrid();
+    renderExercises();
+    updateProgress();
+  }
+
+  // ---------------- EVENTS ----------------
+  els.startBtn.addEventListener('click', startWorkout);
+  els.finishBtn.addEventListener('click', finishWorkout);
+  els.resetBtn.addEventListener('click', resetChecks);
+  els.tabTreino.addEventListener('click', ()=>{
+    if(workoutActive){ flashLockNote(); return; }
+    switchView('treino');
+  });
+  els.tabHistorico.addEventListener('click', ()=>{
+    if(workoutActive){ flashLockNote(); return; }
+    switchView('historico');
+  });
+  els.clearHistBtn.addEventListener('click', clearHistory);
+  els.doneModalOk.addEventListener('click', ()=> els.doneModal.classList.remove('show'));
+  els.videoModalClose.addEventListener('click', closeVideoModal);
+  els.videoModal.addEventListener('click', (e)=>{ if(e.target === els.videoModal) closeVideoModal(); });
+  document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeVideoModal(); });
+
+  function flashLockNote(){
+    els.lockNote.classList.add('show');
+    els.lockNote.textContent = 'Finalize o treino atual antes de navegar.';
+  }
+
+  // Prevent closing tab while workout is active (browser shows its own generic message)
+  window.addEventListener('beforeunload', function(e){
+    if(workoutActive){
+      e.preventDefault();
+      e.returnValue = '';
+      return '';
+    }
+  });
+
+  // ---------------- INIT ----------------
+  (async function init(){
+    await loadLastLoads();
+    renderAll();
+    await loadHistory();
+  })();
+})();
+</script>
+</body>
+</html>
